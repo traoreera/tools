@@ -1,20 +1,3 @@
-Voici un fichier `README.md` complet que tu peux inclure à la racine de ton projet. Il explique l’installation, l’utilisation du `Makefile`, l’architecture du projet, et les bonnes pratiques :
-
----
-
-### 📄 `README.md`
-
-```markdown
-# 🚀 Projet FastAPI Starter
-
-Ce projet est une structure de base pour démarrer une application **FastAPI** avec SQLAlchemy, Alembic, authentification utilisateur, et gestion simplifiée via un `Makefile`.
-
----
-
-## 📁 Arborescence du projet
-
-```
-
 my\_fastapi\_project/ <br>
 ├── .env <br>
 ├── requirements.txt <br>
