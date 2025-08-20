@@ -65,5 +65,5 @@ jobs:
           PYPI_USERNAME: ${{ secrets.PYPIUSERNAME }}
           PYPI_PASSWORD: ${{ secrets.PYPIPASSWORD }}
         run: |
-         poetry config pypi-token.pypi $PYPI_PASSWORD
-         poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
+         poetry config pypi-token.pypi $POETRY_PYPI_TOKEN_PYPI
+         poetry publish --build
