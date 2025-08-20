@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 my\_fastapi\_project/ <br>
 ├── .env <br>
 ├── requirements.txt <br>
@@ -213,4 +213,3 @@ Set the current worker.
 Get the status of the API.
 
     mlt status
->>>>>>> main
