@@ -40,7 +40,7 @@ jobs:
       # 4️⃣ Install dependencies
       - name: Install dependencies
         run: |
-          poetry install --no-interaction --no-ansi
+          poetry install
           poetry install black pytest tqdm autopep8 isort autoflake autopep8
       - name: install cli
         run: |
