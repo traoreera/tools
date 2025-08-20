@@ -61,8 +61,9 @@ jobs:
       # 9️⃣ Publish to PyPI (optional: only on main branch)
       - name: Publish package
         if: github.ref == 'refs/heads/main'
-        uses: pypa/poetry-action@v1.3.0
-        with:
-          publish: true
-          username: ${{ secrets.PYPIUSERNAME }}
-          password: ${{ secrets.PYPIPASSWORD }}
+        env:
+          PYPI_USERNAME: ${{ secrets.PYPIUSERNAME }}
+          PYPI_PASSWORD: ${{ secrets.PYPIPASSWORD }}
+        run: |
+         poetry config pypi-token.pypi $PYPI_PASSWORD
+         poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
