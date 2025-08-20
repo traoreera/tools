@@ -40,7 +40,7 @@ jobs:
       # 4️⃣ Install dependencies
       - name: Install dependencies
         run: |
-         poetry lock 
+         poetry lock --no-update
          poetry install --no-interaction --no-ansi
 
       # 5️⃣ Run CLI help (sanity check)
