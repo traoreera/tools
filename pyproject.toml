@@ -1,0 +1,30 @@
+[project]
+name = "tools"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "traoreera",email = "traoreera@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "rich (>=14.1.0,<15.0.0)",
+    "typer (>=0.16.1,<0.17.0)",
+    "autopep8 (>=2.3.2,<3.0.0)"
+]
+
+[tool.poetry.scripts]
+tools-cli = "tools.cli:main"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pytest = "^8.4.1"
+tqdm = "^4.67.1"
+autopep8 = "^2.3.2"
+isort = "^6.0.1"
+autoflake = "^2.3.1"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

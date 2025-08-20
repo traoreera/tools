@@ -1,0 +1,59 @@
+name: ci/cd pipeline for core
+
+on:
+  push:
+    branches: [main, develp]
+  pull_request:
+    branches: [main, develp]
+
+env:
+  PYTHON_VERSION: "3.13"
+  POETRY_VERSION: "1.8.0"
+
+jobs:
+  test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Python
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 3️⃣ Install Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+
+      # 4️⃣ Install dependencies
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --no-ansi
+          poetry install black pytest tqdm autopep8 isort autoflake autopep8
+      - name: install cli
+        run: |
+         poetry install
+         tools-cli --help
+
+      # 5️⃣ Run pytest
+      - name: Run lint
+        run: |
+          tools-cli lint-fix
+
+
+
+      # 7️⃣ Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
