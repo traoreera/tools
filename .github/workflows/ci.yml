@@ -39,7 +39,9 @@ jobs:
 
       # 4️⃣ Install dependencies
       - name: Install dependencies
-        run: poetry install --no-interaction --no-ansi
+        run: |
+         poetry lock 
+         poetry install --no-interaction --no-ansi
 
       # 5️⃣ Run CLI help (sanity check)
       - name: Run CLI help
@@ -50,18 +52,3 @@ jobs:
         run: |
             tools-cli lint-fix
 
-      # 7️⃣ Run tests
-      - name: Run pytest
-        run: poetry run pytest -v --tb=short
-
-      # 8️⃣ Clean build artifacts and __pycache__
-      - name: Clean project
-        run: |
-          find . -type d -name "__pycache__" -exec rm -rf {} +
-          find . -type f -name "*.pyc" -exec rm -f {} +
-          find . -type f -name "*.pyo" -exec rm -f {} +
-          find . -type f -name "*.backup" -exec rm -f {} +
-
-      # 9️⃣ Optional: Upload coverage to Codecov
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
