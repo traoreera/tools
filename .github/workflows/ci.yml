@@ -1,0 +1,70 @@
+name: CI/CD Pipeline for Core Tools
+
+on:
+  push:
+    branches: [main, develp]
+  pull_request:
+    branches: [main, develp]
+
+env:
+  PYTHON_VERSION: "3.13"
+  POETRY_VERSION: "1.8.0"
+
+jobs:
+  build-and-test:
+    name: Build, Lint, Test, and Publish
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 3️⃣ Install Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: ${{ env.POETRY_VERSION }}
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+
+      # 4️⃣ Install dependencies
+      - name: Install dependencies
+        run: |
+          poetry lock --no-update
+          poetry install --no-interaction --no-ansi
+
+      # 5️⃣ Run CLI help (sanity check)
+      - name: Run CLI help
+        run: poetry run tools-cli --help
+
+      # 6️⃣ Lint code
+      - name: Lint code
+        run: poetry run tools-cli lint-fix
+
+
+
+      # 8️⃣ Build the package
+      - name: Build package
+        run: |
+          poetry build
+
+      # 9️⃣ Publish to PyPI (optional: only on main branch)
+      - name: Publish package
+        if: github.ref == 'refs/heads/main'
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPIPASSWORD }}
+        run: |
+          echo "Configuring Poetry PyPI token..."
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          echo "Publishing package..."
+          poetry publish --build
