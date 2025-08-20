@@ -11,19 +11,19 @@ env:
   POETRY_VERSION: "1.8.0"
 
 jobs:
-  build-and-test:
-    name: Build, Lint, Test, and Publish
+  build-and-publish:
+    name: Build, Test, Lint and Publish
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.13"]
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Python
+      # 2️⃣ Setup Python
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -51,20 +51,30 @@ jobs:
       - name: Lint code
         run: poetry run tools-cli lint-fix
 
+      # 7️⃣ Run tests
+      - name: Run tests
+        run: poetry run pytest -v
 
-
-      # 8️⃣ Build the package
+      # 8️⃣ Build package
       - name: Build package
-        run: |
-          poetry build
+        run: poetry build --no-interaction
 
-      # 9️⃣ Publish to PyPI (optional: only on main branch)
-      - name: Publish package
+      # 9️⃣ Publish to TestPyPI (optional, always for testing)
+      - name: Publish to TestPyPI
+        if: github.ref != 'refs/heads/main'
+        env:
+          TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+        run: |
+          echo "Configuring TestPyPI token..."
+          poetry config pypi-token.testpypi $TEST_PYPI_TOKEN
+          poetry publish --build --repository testpypi --no-interaction
+
+      # 🔟 Publish to PyPI (only on main branch)
+      - name: Publish to PyPI
         if: github.ref == 'refs/heads/main'
         env:
           PYPI_TOKEN: ${{ secrets.PYPIPASSWORD }}
         run: |
-          echo "Configuring Poetry PyPI token..."
+          echo "Configuring PyPI token..."
           poetry config pypi-token.pypi $PYPI_TOKEN
-          echo "Publishing package..."
-          poetry publish --build
+          poetry publish --build --repository pypi --no-interaction
