@@ -1,4 +1,4 @@
-name: ci/cd pipeline for core
+name: CI/CD Pipeline for Core Tools
 
 on:
   push:
@@ -12,18 +12,18 @@ env:
 
 jobs:
   test:
-    name: Lint and Test
+    name: Lint, Test, and CLI
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.13"]
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Python
+      # 2️⃣ Set up Python
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -39,21 +39,29 @@ jobs:
 
       # 4️⃣ Install dependencies
       - name: Install dependencies
+        run: poetry install --no-interaction --no-ansi
+
+      # 5️⃣ Run CLI help (sanity check)
+      - name: Run CLI help
+        run: poetry run tools-cli --help
+
+      # 6️⃣ Lint code
+      - name: Lint code (black, isort, autoflake, autopep8)
         run: |
-          poetry install
-          poetry install black pytest tqdm autopep8 isort autoflake autopep8
-      - name: install cli
+            tools-cli lint-fix
+
+      # 7️⃣ Run tests
+      - name: Run pytest
+        run: poetry run pytest -v --tb=short
+
+      # 8️⃣ Clean build artifacts and __pycache__
+      - name: Clean project
         run: |
-         poetry install
-         tools-cli --help
+          find . -type d -name "__pycache__" -exec rm -rf {} +
+          find . -type f -name "*.pyc" -exec rm -f {} +
+          find . -type f -name "*.pyo" -exec rm -f {} +
+          find . -type f -name "*.backup" -exec rm -f {} +
 
-      # 5️⃣ Run pytest
-      - name: Run lint
-        run: |
-          tools-cli lint-fix
-
-
-
-      # 7️⃣ Upload coverage to Codecov
+      # 9️⃣ Optional: Upload coverage to Codecov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
