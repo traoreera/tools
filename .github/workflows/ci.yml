@@ -11,8 +11,8 @@ env:
   POETRY_VERSION: "1.8.0"
 
 jobs:
-  test:
-    name: Lint, Test, and CLI
+  build-and-test:
+    name: Build, Lint, Test, and Publish
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,15 +40,29 @@ jobs:
       # 4️⃣ Install dependencies
       - name: Install dependencies
         run: |
-         poetry lock --no-update
-         poetry install --no-interaction --no-ansi
+          poetry lock --no-update
+          poetry install --no-interaction --no-ansi
 
       # 5️⃣ Run CLI help (sanity check)
       - name: Run CLI help
         run: poetry run tools-cli --help
 
       # 6️⃣ Lint code
-      - name: Lint code (black, isort, autoflake, autopep8)
-        run: |
-            tools-cli lint-fix
+      - name: Lint code
+        run: poetry run tools-cli lint-fix
 
+
+
+      # 8️⃣ Build the package
+      - name: Build package
+        run: |
+          poetry build
+
+      # 9️⃣ Publish to PyPI (optional: only on main branch)
+      - name: Publish package
+        if: github.ref == 'refs/heads/main'
+        uses: pypa/poetry-action@v1.3.0
+        with:
+          publish: true
+          username: ${{ secrets.PYPIUSERNAME }}
+          password: ${{ secrets.PYPIPASSWORD }}
