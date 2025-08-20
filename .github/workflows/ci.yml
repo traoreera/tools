@@ -62,8 +62,9 @@ jobs:
       - name: Publish package
         if: github.ref == 'refs/heads/main'
         env:
-          PYPI_USERNAME: ${{ secrets.PYPIUSERNAME }}
-          PYPI_PASSWORD: ${{ secrets.PYPIPASSWORD }}
+          PYPI_TOKEN: ${{ secrets.PYPIPASSWORD }}
         run: |
-         poetry config pypi-token.pypi $POETRY_PYPI_TOKEN_PYPI
-         poetry publish --build
+          echo "Configuring Poetry PyPI token..."
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          echo "Publishing package..."
+          poetry publish --build
